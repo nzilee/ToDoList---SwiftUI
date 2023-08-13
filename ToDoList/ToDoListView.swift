@@ -8,44 +8,50 @@
 import SwiftUI
 
 struct ToDoListView: View {
-    
-    var toDos = [
-        "Vacuuming the floors",
-        "Dusting the surfaces",
-        "Washing the dishes",
-        "Taking out the trash",
-        "Sweeping the floors",
-        "Cleaning the windows",
-        "Laundry (washing and folding)",
-        "Making the bed",
-        "Wiping down kitchen counters",
-        "Mopping the floors",
-        "Watering the plants",
-        "Cleaning the bathroom",
-        "Organizing cluttered areas",
-        "Changing bed linens",
-        "Cleaning out the fridge",
-        "Wiping down appliances",
-        "Vacuuming carpets and rugs",
-        "Scrubbing the stove and oven",
-        "Cleaning mirrors and glass surfaces",
-        "Dusting and wiping electronics"
-    ]
+    @State private var sheetIsPresented = false
+    @EnvironmentObject var toDoVM: ToDoViewModel
     
     var body: some View {
         NavigationView {
             List {
-                ForEach(toDos, id: \.self) { toDo in
+                ForEach(toDoVM.toDos) { toDo in
                     NavigationLink {
-                        DetailView(passedValue: "\(toDo)")
+                        DetailView(toDo: toDo)
+                            .navigationBarBackButtonHidden(true)
+                            .navigationBarTitleDisplayMode(.inline)
                     } label: {
-                        Text("\(toDo)")
+                        Text(toDo.item)
                     }
-
+                    .font(.title2)
+                }
+                .onDelete { indexSet in
+                    toDoVM.onDelete(indexSet: indexSet)
+                }
+                .onMove { fromOffsets , toOffset in
+                    toDoVM.onMove(fromOffsets: fromOffsets, toOffset: toOffset)
                 }
             }
-            .navigationTitle("Gg Son how you doing")
+            .navigationTitle("Your ToDo List")
             .listStyle(.plain)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    EditButton()
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        sheetIsPresented.toggle()
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $sheetIsPresented) {
+                NavigationView {
+                    DetailView(toDo: ToDo(), newToDo: true)
+                        .navigationBarTitle("Enter a new note")
+                }
+            }
         }
     }
 }
@@ -53,6 +59,7 @@ struct ToDoListView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ToDoListView()
+            .environmentObject(ToDoViewModel())
     }
 }
 
