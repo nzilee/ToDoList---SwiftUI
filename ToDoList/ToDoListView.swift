@@ -25,10 +25,10 @@ struct ToDoListView: View {
                     .font(.title2)
                 }
                 .onDelete { indexSet in
-                    toDoVM.onDelete(indexSet: indexSet)
+                    toDoVM.deleteToDo(indexSet: indexSet)
                 }
                 .onMove { fromOffsets , toOffset in
-                    toDoVM.onMove(fromOffsets: fromOffsets, toOffset: toOffset)
+                    toDoVM.moveToDo(fromOffsets: fromOffsets, toOffset: toOffset)
                 }
             }
             .navigationTitle("Your ToDo List")
@@ -48,7 +48,7 @@ struct ToDoListView: View {
             }
             .sheet(isPresented: $sheetIsPresented) {
                 NavigationView {
-                    DetailView(toDo: ToDo(), newToDo: true)
+                    DetailView(toDo: ToDo())
                         .navigationBarTitle("Enter a new note")
                 }
             }

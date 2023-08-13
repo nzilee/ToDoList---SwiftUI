@@ -11,14 +11,16 @@ class ToDoViewModel: ObservableObject {
     @Published var toDos: [ToDo] = []
     
     init() {
-        toDos.append(ToDo(item: "Learn Swift!"))
-        toDos.append(ToDo(item: "Build Apps!"))
-        toDos.append(ToDo(item: "Change The World!"))
+        toDos.append(ToDo(id: UUID().uuidString, item: "Learn Swift!"))
+        toDos.append(ToDo(id: UUID().uuidString, item: "Build Apps!"))
+        toDos.append(ToDo(id: UUID().uuidString, item: "Change The World!"))
     }
     
-    func saveToDo(toDo: ToDo, newToDo: Bool) {
-        if newToDo {
-            toDos.append(toDo)
+    func saveToDo(toDo: ToDo) {
+        if toDo.id == nil {
+            var newToDo = toDo
+            newToDo.id = UUID().uuidString
+            toDos.append(newToDo)
         } else {
             if let index = toDos.firstIndex(where: {$0.id == toDo.id}) {
                 toDos[index] = toDo
@@ -26,11 +28,11 @@ class ToDoViewModel: ObservableObject {
         }
     }
     
-    func onDelete(indexSet: IndexSet) {
+    func deleteToDo(indexSet: IndexSet) {
         toDos.remove(atOffsets: indexSet)
     }
     
-    func onMove(fromOffsets: IndexSet, toOffset: Int) {
+    func moveToDo(fromOffsets: IndexSet, toOffset: Int) {
         toDos.move(fromOffsets: fromOffsets, toOffset: toOffset)
     }
 }
