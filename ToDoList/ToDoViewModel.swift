@@ -11,9 +11,7 @@ class ToDoViewModel: ObservableObject {
     @Published var toDos: [ToDo] = []
     
     init() {
-        toDos.append(ToDo(id: UUID().uuidString, item: "Learn Swift!"))
-        toDos.append(ToDo(id: UUID().uuidString, item: "Build Apps!"))
-        toDos.append(ToDo(id: UUID().uuidString, item: "Change The World!"))
+        loadData()
     }
     
     func saveToDo(toDo: ToDo) {
@@ -26,13 +24,47 @@ class ToDoViewModel: ObservableObject {
                 toDos[index] = toDo
             }
         }
+        saveData()
     }
     
     func deleteToDo(indexSet: IndexSet) {
         toDos.remove(atOffsets: indexSet)
+        saveData()
     }
     
     func moveToDo(fromOffsets: IndexSet, toOffset: Int) {
         toDos.move(fromOffsets: fromOffsets, toOffset: toOffset)
+        saveData()
+    }
+    
+    func saveData() {
+        let path = URL.documents.appendingPathComponent("toDos")
+        let data = try? JSONEncoder().encode(toDos)
+        
+        do {
+            try data?.write(to: path)
+        } catch {
+            print("😡 ERROR: Could not save data \(error.localizedDescription)")
+        }
+    }
+    
+    func loadData() {
+        let path = URL.documents.appendingPathComponent("toDos")
+        guard let data = try? Data(contentsOf: path) else {return}
+        
+        do {
+            toDos = try JSONDecoder().decode(Array<ToDo>.self, from: data)
+        } catch {
+            print("😡 ERROR: Could not load the data \(error.localizedDescription)")
+        }
+    }
+}
+
+extension URL {
+
+    static var documents: URL {
+        return FileManager
+            .default
+            .urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
 }
