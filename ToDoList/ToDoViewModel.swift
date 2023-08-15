@@ -58,6 +58,22 @@ class ToDoViewModel: ObservableObject {
             print("😡 ERROR: Could not load the data \(error.localizedDescription)")
         }
     }
+    
+    func toggleCheckbox(toDo: ToDo) {
+        
+        guard toDo.id != nil else {return}
+        
+        var newToDo = toDo
+        newToDo.isFinished.toggle()
+        
+        if let index = toDos.firstIndex(where: {$0.id == newToDo.id}) {
+            toDos[index] = newToDo
+        }
+        
+        saveData()
+
+    }
+    
 }
 
 extension URL {

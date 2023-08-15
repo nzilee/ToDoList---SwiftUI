@@ -11,16 +11,25 @@ struct ToDoListView: View {
     @State private var sheetIsPresented = false
     @EnvironmentObject var toDoVM: ToDoViewModel
     
+    
     var body: some View {
         NavigationView {
             List {
                 ForEach(toDoVM.toDos) { toDo in
-                    NavigationLink {
-                        DetailView(toDo: toDo)
-                            .navigationBarBackButtonHidden(true)
-                            .navigationBarTitleDisplayMode(.inline)
-                    } label: {
-                        Text(toDo.item)
+                    HStack {
+                        Image(systemName: toDo.isFinished ? "checkmark.rectangle" : "rectangle")
+                            .onTapGesture {
+                                toDoVM.toggleCheckbox(toDo: toDo)
+                            }
+                        
+                        NavigationLink {
+                            DetailView(toDo: toDo)
+                                .navigationBarBackButtonHidden(true)
+                                .navigationBarTitleDisplayMode(.inline)
+                        } label: {
+                            Text(toDo.item)
+                        }
+                        
                     }
                     .font(.title2)
                 }
